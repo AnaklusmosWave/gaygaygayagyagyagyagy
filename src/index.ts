@@ -24,6 +24,7 @@ const SYSTEM_PROMPT =
 
 const DEFAULT_MAX_TOKENS = 1024;
 const OPENAI_COMPLETIONS_PATH = "/v1/chat/completions";
+const OPENAI_MODELS_PATH = "/v1/models";
 const OPENAI_OBJECT = "chat.completion";
 const OPENAI_CHUNK_OBJECT = "chat.completion.chunk";
 
@@ -41,6 +42,14 @@ export default {
 		if (url.pathname === OPENAI_COMPLETIONS_PATH) {
 			if (request.method === "POST") {
 				return handleOpenAIChatRequest(request, env);
+			}
+
+			return openAIError("Method not allowed", 405);
+		}
+
+		if (url.pathname === OPENAI_MODELS_PATH) {
+			if (request.method === "GET") {
+				return handleOpenAIModelsRequest();
 			}
 
 			return openAIError("Method not allowed", 405);
@@ -119,6 +128,25 @@ async function handleChatRequest(
 			},
 		);
 	}
+}
+
+function handleOpenAIModelsRequest(): Response {
+	const created = Math.floor(Date.now() / 1000);
+	const payload = {
+		object: "list",
+		data: [
+			{
+				id: MODEL_ID,
+				object: "model",
+				created,
+				owned_by: "cloudflare",
+			},
+		],
+	};
+
+	return new Response(JSON.stringify(payload), {
+		headers: { "content-type": "application/json" },
+	});
 }
 
 async function handleOpenAIChatRequest(

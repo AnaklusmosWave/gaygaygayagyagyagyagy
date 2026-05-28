@@ -106,6 +106,7 @@ The backend is built with Cloudflare Workers and uses the Workers AI platform to
 
 1. **API Endpoint** (`/api/chat`): Accepts POST requests with chat messages and streams responses
 1. **OpenAI-Compatible Endpoint** (`/v1/chat/completions`): Accepts OpenAI-style chat completion requests with optional streaming
+1. **Models Endpoint** (`/v1/models`): Returns the available model list for OpenAI-compatible clients
 2. **Streaming**: Uses Server-Sent Events (SSE) for real-time streaming of AI responses
 3. **Workers AI Binding**: Connects to Cloudflare's AI service via the Workers AI binding
 
