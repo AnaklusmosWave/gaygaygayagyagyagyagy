@@ -22,6 +22,10 @@ const MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const SYSTEM_PROMPT =
 	"You are a helpful, friendly assistant. Provide concise and accurate responses.";
 
+const OPENAI_COMPLETIONS_PATH = "/v1/chat/completions";
+const OPENAI_OBJECT = "chat.completion";
+const OPENAI_CHUNK_OBJECT = "chat.completion.chunk";
+
 export default {
 	/**
 	 * Main request handler for the Worker
@@ -61,10 +65,6 @@ export default {
 		return new Response("Not found", { status: 404 });
 	},
 } satisfies ExportedHandler<Env>;
-
-const OPENAI_COMPLETIONS_PATH = "/v1/chat/completions";
-const OPENAI_OBJECT = "chat.completion";
-const OPENAI_CHUNK_OBJECT = "chat.completion.chunk";
 
 /**
  * Handles chat API requests
@@ -145,7 +145,7 @@ async function handleOpenAIChatRequest(
 		messages.unshift({ role: "system", content: SYSTEM_PROMPT });
 	}
 
-	const model = body.model ?? MODEL_ID;
+	const model = typeof body.model === "string" && body.model ? body.model : MODEL_ID;
 	const aiOptions: Record<string, unknown> = {
 		messages,
 		max_tokens: body.max_tokens ?? 1024,
@@ -174,7 +174,7 @@ async function handleOpenAIChatRequest(
 	try {
 		if (body.stream) {
 			const stream = (await env.AI.run(
-				MODEL_ID,
+				model,
 				{ ...aiOptions, stream: true },
 				{},
 			)) as ReadableStream<Uint8Array>;
@@ -185,7 +185,7 @@ async function handleOpenAIChatRequest(
 			);
 		}
 
-		const result = await env.AI.run(MODEL_ID, aiOptions, {});
+		const result = await env.AI.run(model, aiOptions, {});
 		const responseText = extractResponseText(result);
 		if (!responseText) {
 			return openAIError("No response generated", 500);
