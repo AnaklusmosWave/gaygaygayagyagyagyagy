@@ -145,7 +145,12 @@ async function handleOpenAIChatRequest(
 		messages.unshift({ role: "system", content: SYSTEM_PROMPT });
 	}
 
-	const model = typeof body.model === "string" && body.model ? body.model : MODEL_ID;
+	const requestedModel =
+		typeof body.model === "string" && body.model ? body.model : MODEL_ID;
+	if (requestedModel !== MODEL_ID) {
+		return openAIError(`Model ${requestedModel} is not available`, 400);
+	}
+	const model = MODEL_ID;
 	const aiOptions: Record<string, unknown> = {
 		messages,
 		max_tokens: body.max_tokens ?? 1024,
