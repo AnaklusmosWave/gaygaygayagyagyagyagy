@@ -22,6 +22,7 @@ const MODEL_ID = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const SYSTEM_PROMPT =
 	"You are a helpful, friendly assistant. Provide concise and accurate responses.";
 
+const DEFAULT_MAX_TOKENS = 1024;
 const OPENAI_COMPLETIONS_PATH = "/v1/chat/completions";
 const OPENAI_OBJECT = "chat.completion";
 const OPENAI_CHUNK_OBJECT = "chat.completion.chunk";
@@ -153,7 +154,7 @@ async function handleOpenAIChatRequest(
 	const model = MODEL_ID;
 	const aiOptions: Record<string, unknown> = {
 		messages,
-		max_tokens: body.max_tokens ?? 1024,
+		max_tokens: body.max_tokens ?? DEFAULT_MAX_TOKENS,
 	};
 
 	if (typeof body.temperature === "number") {
@@ -414,7 +415,11 @@ function createOpenAIStream(
 			}
 		},
 		cancel() {
-			reader.cancel().catch(() => undefined);
+			reader
+				.cancel()
+				.catch((error) =>
+					console.error("Error cancelling OpenAI stream:", error),
+				);
 		},
 	});
 }
