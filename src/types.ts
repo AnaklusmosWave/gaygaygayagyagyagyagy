@@ -21,3 +21,25 @@ export interface ChatMessage {
 	role: "system" | "user" | "assistant";
 	content: string;
 }
+
+export type OpenAIContentPart = {
+	type: "text";
+	text: string;
+};
+
+export interface OpenAIChatMessage {
+	role: "system" | "user" | "assistant" | "developer" | "tool";
+	content: string | OpenAIContentPart[];
+}
+
+export interface OpenAIChatCompletionRequest {
+	model?: string;
+	messages: OpenAIChatMessage[];
+	stream?: boolean;
+	max_tokens?: number;
+	temperature?: number;
+	top_p?: number;
+	presence_penalty?: number;
+	frequency_penalty?: number;
+	stop?: string | string[];
+}

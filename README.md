@@ -105,6 +105,7 @@ npm wrangler tail
 The backend is built with Cloudflare Workers and uses the Workers AI platform to generate responses. The main components are:
 
 1. **API Endpoint** (`/api/chat`): Accepts POST requests with chat messages and streams responses
+1. **OpenAI-Compatible Endpoint** (`/v1/chat/completions`): Accepts OpenAI-style chat completion requests with optional streaming
 2. **Streaming**: Uses Server-Sent Events (SSE) for real-time streaming of AI responses
 3. **Workers AI Binding**: Connects to Cloudflare's AI service via the Workers AI binding
 
